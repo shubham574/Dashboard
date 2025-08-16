@@ -12,7 +12,7 @@ export async function POST(request) {
     const { meeting_id } = await request.json();
 
     const client = await clientPromise;
-    const db = client.db('employee_management');
+    const db = client.db('teamboard');
     const users = db.collection('users');
     const attendance = db.collection('attendance');
 

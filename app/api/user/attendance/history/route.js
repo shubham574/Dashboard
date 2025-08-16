@@ -10,7 +10,7 @@ export async function GET() {
     }
 
     const client = await clientPromise;
-    const db = client.db('employee_management');
+    const db = client.db('teamboard');
     const users = db.collection('users');
     const attendance = db.collection('attendance');
 

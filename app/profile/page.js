@@ -26,10 +26,34 @@ export default function Profile() {
     try {
       const response = await fetch('/api/user/attendance/history');
       const data = await response.json();
-      setAttendanceHistory(data.attendance);
-      setStats(data.stats);
+      
+      if (data.attendance && Array.isArray(data.attendance)) {
+        setAttendanceHistory(data.attendance);
+      } else {
+        setAttendanceHistory([]);
+      }
+      
+      if (data.stats && typeof data.stats === 'object') {
+        setStats({
+          totalHours: data.stats.totalHours || 0,
+          totalDays: data.stats.totalDays || 0,
+          averageHours: data.stats.averageHours || 0
+        });
+      } else {
+        setStats({
+          totalHours: 0,
+          totalDays: 0,
+          averageHours: 0
+        });
+      }
     } catch (error) {
       console.error('Error fetching attendance:', error);
+      setAttendanceHistory([]);
+      setStats({
+        totalHours: 0,
+        totalDays: 0,
+        averageHours: 0
+      });
     } finally {
       setLoading(false);
     }

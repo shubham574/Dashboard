@@ -10,7 +10,11 @@ export default function Dashboard() {
   const [stats, setStats] = useState({
     totalMeetings: 0,
     todayAttendance: 0,
-    totalForms: 0
+    totalForms: 0,
+    isCurrentlyActive: false,
+    totalHours: 0,
+    totalDays: 0,
+    averageHours: 0
   });
 
   useEffect(() => {
@@ -79,8 +83,16 @@ export default function Dashboard() {
       description: 'Track your work hours and attendance',
       icon: Clock,
       href: '/profile#attendance',
-      color: 'bg-orange-500',
-      stat: `${stats.todayAttendance}h today`
+      color: stats.isCurrentlyActive ? 'bg-green-500' : 'bg-orange-500',
+      stat: stats.isCurrentlyActive ? 'Active' : `${stats.todayAttendance}h today`
+    },
+    {
+      title: 'Statistics',
+      description: 'View your overall work statistics',
+      icon: User,
+      href: '/profile',
+      color: 'bg-indigo-500',
+      stat: `${stats.totalHours}h total`
     }
   ];
 

@@ -20,9 +20,15 @@ export default function Meetings() {
     try {
       const response = await fetch('/api/meetings');
       const data = await response.json();
-      setMeetings(data);
+      if (data.success && Array.isArray(data.meetings)) {
+        setMeetings(data.meetings);
+      } else {
+        console.error('Invalid meetings data format:', data);
+        setMeetings([]);
+      }
     } catch (error) {
       console.error('Error fetching meetings:', error);
+      setMeetings([]);
     } finally {
       setLoading(false);
     }
@@ -50,14 +56,19 @@ export default function Meetings() {
         }),
       });
 
-      if (response.ok) {
-        const data = await response.json();
+      const data = await response.json();
+      
+      if (response.ok && data.success) {
         setActiveSession(data.attendance);
         // Redirect to meeting link
         window.open(meeting.acf.meet_link, '_blank');
+      } else {
+        console.error('Failed to join meeting:', data.message);
+        alert(data.message || 'Failed to join meeting');
       }
     } catch (error) {
       console.error('Error joining meeting:', error);
+      alert('Error joining meeting. Please try again.');
     }
   };
 
@@ -67,11 +78,18 @@ export default function Meetings() {
         method: 'POST',
       });
 
-      if (response.ok) {
+      const data = await response.json();
+      
+      if (response.ok && data.success) {
         setActiveSession(null);
+        alert(`Successfully logged out. Worked hours: ${data.worked_hours}h`);
+      } else {
+        console.error('Failed to logout:', data.message);
+        alert(data.message || 'Failed to logout');
       }
     } catch (error) {
       console.error('Error logging out:', error);
+      alert('Error logging out. Please try again.');
     }
   };
 

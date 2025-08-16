@@ -13,7 +13,7 @@ export async function POST(request) {
     }
 
     const client = await clientPromise;
-    const db = client.db('employee_management');
+    const db = client.db('teamboard');
     const users = db.collection('users');
 
     // Check if user already exists
