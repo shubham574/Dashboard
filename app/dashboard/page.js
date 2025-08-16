@@ -139,6 +139,9 @@ export default function Dashboard() {
         })}
       </div>
 
+      {/* Employee Stats Section */}
+      <EmployeeStatsSection />
+      
       <div className="bg-white rounded-lg shadow">
         <div className="p-6">
           <h2 className="text-xl font-semibold mb-4">Recent Activity</h2>
@@ -155,6 +158,99 @@ export default function Dashboard() {
               <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
               <span>Completed weekly report form</span>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// New Employee Stats Section Component
+function EmployeeStatsSection() {
+  const [employees, setEmployees] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchEmployeeStats();
+  }, []);
+
+  const fetchEmployeeStats = async () => {
+    try {
+      const response = await fetch('/api/employees/active-stats');
+      const data = await response.json();
+      setEmployees(data.employees || []);
+    } catch (error) {
+      console.error('Error fetching employee stats:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="bg-white rounded-lg shadow p-6">
+        <h2 className="text-xl font-semibold mb-4">Team Members Currently Active</h2>
+        <div className="animate-pulse">
+          <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+          <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (employees.length === 0) {
+    return (
+      <div className="bg-white rounded-lg shadow p-6">
+        <h2 className="text-xl font-semibold mb-4">Team Members Currently Active</h2>
+        <p className="text-gray-500">No team members are currently signed in.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white rounded-lg shadow">
+      <div className="p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold">Team Members Currently Active</h2>
+          <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+            {employees.length} Active
+          </span>
+        </div>
+        
+        <div className="space-y-4">
+          {employees.map((employee) => (
+            <div key={employee.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div className="flex items-center space-x-3">
+                <img
+                  src={employee.profilePic || '/default-avatar.png'}
+                  alt={employee.name}
+                  className="w-10 h-10 rounded-full object-cover"
+                />
+                <div>
+                  <h3 className="font-medium text-gray-900">{employee.name}</h3>
+                  <p className="text-sm text-gray-500">{employee.email}</p>
+                </div>
+              </div>
+              
+              <div className="text-right">
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <span className="text-sm font-medium text-green-600">Online</span>
+                </div>
+                <p className="text-sm text-gray-600 mt-1">
+                  {employee.totalMonthlyHours}h this month
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+        
+        <div className="mt-4 pt-4 border-t border-gray-200">
+          <div className="flex justify-between text-sm text-gray-600">
+            <span>Total Team Hours This Month:</span>
+            <span className="font-medium">
+              {employees.reduce((sum, emp) => sum + emp.totalMonthlyHours, 0).toFixed(1)}h
+            </span>
           </div>
         </div>
       </div>
